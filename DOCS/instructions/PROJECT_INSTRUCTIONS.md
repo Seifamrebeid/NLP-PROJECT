@@ -164,8 +164,3 @@ Verify the dataset's license and usage conditions before redistributing it.
 - Keep API keys and other secrets out of the repository. Use `.env.example` with placeholders.
 - Keep the contribution matrix accurate to the work actually completed.
 
-## Additional Team Instructions
-
-Add new project decisions, constraints, or instructions here:
-
--
