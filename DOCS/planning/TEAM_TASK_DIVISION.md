@@ -32,7 +32,7 @@ Complete tasks in order because later tasks depend on the interfaces and outputs
 - [x] **Seif:** Create the shared GitHub repository, invite everyone, coordinate the domain decision, and open the first issues.
 - [ ] **Mohamed:** Review the project requirements and propose a practical RAG workflow and technical scope.
 - [ ] **Abdullah:** Review the Bitext dataset and propose example TechStore customer questions across its support categories.
-- [ ] **Ahmed:** Create the initial folder structure and `.gitignore`, and verify that each member can access the repository.
+- [ ] **Ahmed:** Create the initial folder structure and `.gitignore`,
 - [ ] **Everyone:** Agree that TechStore is the fictional online electronics store, its target users are customers seeking support, and its problem is finding accurate answers across policies and product information; create personal feature branches.
 
 **Checkpoint:** Repository, domain decision, and first issue assignments are ready before document collection begins.
