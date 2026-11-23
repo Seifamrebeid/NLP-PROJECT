@@ -402,8 +402,14 @@ Agentic-RAG-System/
 │   ├── processed/
 │   └── sample_queries.json
 ├── DOCS/
-│   ├── Agentic RAG System Project.pdf
-│   └── final_report.pdf
+│   ├── instructions/
+│   │   └── PROJECT_INSTRUCTIONS.md
+│   ├── planning/
+│   │   └── TEAM_TASK_DIVISION.md
+│   ├── requirements/
+│   │   └── Agentic RAG System Project.pdf
+│   └── reports/
+│       └── final_report.pdf
 ├── results/
 │   ├── screenshots/
 │   └── evaluation_results.csv
