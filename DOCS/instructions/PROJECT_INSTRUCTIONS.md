@@ -49,6 +49,7 @@ These rules are mandatory for all code changes:
 9. Remove unused imports and dead code when they are within the scope of the change.
 10. Run relevant tests after every major change and report their actual results.
 11. Update documentation when changing architecture.
+12. After completing and verifying a task or subtask, mark its checkbox in `DOCS/planning/TEAM_TASK_DIVISION.md`. Do not mark incomplete work complete or check off another member's task without that member's confirmation.
 
 ## Documentation Requirements
 
