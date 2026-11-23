@@ -42,6 +42,8 @@ These documents should be internally consistent and include useful source metada
 
 Source: [Bitext Customer Support Dataset on Hugging Face](https://huggingface.co/datasets/bitext/Bitext-customer-support-llm-chatbot-training-dataset)
 
+Downloaded CSV: `data/raw/Bitext_Sample_Customer_Support_Training_Dataset_27K_responses-v11.csv` (26,872 records; columns: `flags`, `instruction`, `category`, `intent`, `response`).
+
 The dataset contains synthetic customer-support examples. The project will use its instructions, categories, intents, responses, and flags for intent examples, routing tests, and evaluation cases.
 
 **Bitext is not genuine TechStore conversation history and is not the authority for TechStore policies.** Company-policy answers must be grounded in the fictional TechStore knowledge base. Verify the dataset's license and usage conditions before redistributing it.
