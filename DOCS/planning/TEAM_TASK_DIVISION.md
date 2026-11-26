@@ -26,7 +26,36 @@ Build an Agentic Retrieval-Augmented Generation (RAG) customer-support assistant
 
 Complete tasks in order because later tasks depend on the interfaces and outputs established earlier. Every task assigns a concrete action to Seif, Mohamed, Abdullah, and Ahmed; Seif coordinates the work, while the named task specialist handles the main implementation. The team may work on independent subtasks at the same time after their prerequisites are agreed.
 
-### Task 1: Create the repository and agree on the project
+### Task Status and Dependencies
+
+Each task heading has a status marker:
+
+- 🟢 **Ready:** every prerequisite task below is finished, so the task can start now.
+- 🔴 **Blocked:** at least one prerequisite task is unfinished; the table names it.
+
+A task counts as finished when all its checkboxes are checked and its checkpoint is met. When a task finishes, recolor every task whose prerequisites are now all finished, in the same pull request as the checkbox update (see rule 12 in `PROJECT_INSTRUCTIONS.md`). Tasks that share a prerequisite can run in parallel, for example Tasks 2 and 3 after Task 1. Status as of the last update: only Task 1 is ready; it is in progress.
+
+| Task | Prerequisites | Why |
+| ---- | ------------- | --- |
+| 1 | None | Creates the repository and the domain decision. |
+| 2 | 1 | The Task 1 checkpoint requires the repository and domain decision before document collection. |
+| 3 | 1 | Needs the agreed domain; can run in parallel with Task 2. |
+| 4 | 3 | Needs the agreed libraries and shared settings. |
+| 5 | 2, 3 | Needs the documents and the metadata format. |
+| 6 | 3, 5 | Needs loaded documents in the agreed representation. |
+| 7 | 4, 6 | Needs chunks and the retrieval configuration. |
+| 8 | 3, 4 | Needs the graph state and configuration. |
+| 9 | 7, 8, 11 | Needs the retriever, the routes, and the shared LLM client. |
+| 10 | 9, 11 | Needs the working retrieval-to-answer path and the LLM client. |
+| 11 | 3, 4 | Needs the graph input/output contracts and the environment configuration; must be ready before Task 9 starts. |
+| 12 | 9, 11 | Needs the graph to checkpoint and the LLM client. |
+| 13 | 9, 12 | Needs the graph interface and the HITL actions. |
+| 14 | 2, 8, 12 | The test set needs the documents and routes; measuring needs the HITL flow. |
+| 15 | 9, 10, 11, 12, 13, 14 | Integrates everything built before it. |
+| 16 | 14, 15 | Needs measured results and a stable system for screenshots. |
+| 17 | 16 | Final review of the finished report and repository. |
+
+### 🟢 Task 1: Create the repository and agree on the project
 
 **Team assignments**
 
@@ -38,7 +67,7 @@ Complete tasks in order because later tasks depend on the interfaces and outputs
 
 **Checkpoint:** Repository, domain decision, and first issue assignments are ready before document collection begins.
 
-### Task 2: Find and prepare the domain documents
+### 🔴 Task 2: Find and prepare the domain documents
 
 **Task owner: Abdullah**
 
@@ -54,7 +83,7 @@ Use the Bitext Customer Support Dataset for synthetic intent examples and evalua
 
 **Checkpoint:** The Bitext source and its usage terms are documented, all ten fictional TechStore documents exist, and the team has reviewed them for consistency.
 
-### Task 3: Agree on the architecture and shared data formats
+### 🔴 Task 3: Agree on the architecture and shared data formats
 
 **Lead: Mohamed**  
 **Collaborators: Seif, Abdullah, Ahmed**
@@ -79,7 +108,7 @@ The team will review the design before implementation. Seif records the agreed c
 
 **Checkpoint:** All four members approve the interfaces before separate modules are implemented.
 
-### Task 4: Set up configuration, dependencies, and project instructions
+### 🔴 Task 4: Set up configuration, dependencies, and project instructions
 
 **Lead: Ahmed**  
 **Collaborators: Seif, Abdullah, Mohamed**
@@ -104,7 +133,7 @@ Seif reviews the repository setup; Abdullah checks data and vector-store setting
 
 **Checkpoint:** A fresh environment can install the project without committed secrets.
 
-### Task 5: Load and clean the documents
+### 🔴 Task 5: Load and clean the documents
 
 **Lead: Abdullah**  
 **Collaborators: Mohamed, Ahmed**
@@ -122,7 +151,7 @@ Abdullah will implement loading for the Bitext dataset and the team's Markdown o
 
 **Checkpoint:** Loaded documents contain usable text and traceable source metadata.
 
-### Task 6: Split documents into searchable chunks
+### 🔴 Task 6: Split documents into searchable chunks
 
 **Lead: Mohamed**  
 **Collaborators: Abdullah, Ahmed**
@@ -139,7 +168,7 @@ Mohamed will implement chunking for the fictional TechStore knowledge-base docum
 
 **Checkpoint:** TechStore policy chunks retain their source metadata and pass the chunking tests; Bitext examples remain labeled for routing/evaluation.
 
-### Task 7: Build embeddings, the vector store, and retrieval
+### 🔴 Task 7: Build embeddings, the vector store, and retrieval
 
 **Lead: Ahmed**  
 **Collaborators: Abdullah, Mohamed**
@@ -166,7 +195,7 @@ Abdullah will check returned documents against the sample questions; Mohamed wil
 
 **Checkpoint:** Sample questions return relevant chunks with source metadata.
 
-### Task 8: Implement intent routing in LangGraph
+### 🔴 Task 8: Implement intent routing in LangGraph
 
 **Coordinator: Seif**
 **Collaborators: Mohamed, Abdullah, Ahmed**
@@ -190,7 +219,7 @@ Mohamed reviews graph state and edges; Abdullah provides labeled Bitext cases an
 
 **Checkpoint:** Every sample input reaches its expected branch and the selected route is available in graph output.
 
-### Task 9: Connect retrieval, answer generation, and source display
+### 🔴 Task 9: Connect retrieval, answer generation, and source display
 
 **Lead: Mohamed**  
 **Collaborators: Abdullah, Ahmed, Seif**
@@ -207,7 +236,7 @@ Mohamed will connect the retrieval branch to the TechStore vector store and add 
 
 **Checkpoint:** A domain query produces an answer and the evidence used to generate it.
 
-### Task 10: Add evaluation, query refinement, and retry limits
+### 🔴 Task 10: Add evaluation, query refinement, and retry limits
 
 **Lead: Abdullah**  
 **Collaborators: Mohamed, Ahmed, Seif**
@@ -232,7 +261,7 @@ Mohamed reviews the graph cycle and stop condition; Ahmed tests the displayed re
 
 **Checkpoint:** The workflow recovers from weak retrieval when possible and always stops at the configured limit.
 
-### Task 11: Integrate the LLM client and prompts
+### 🔴 Task 11: Integrate the LLM client and prompts
 
 **Lead: Ahmed**  
 **Collaborators: Abdullah, Mohamed, Seif**
@@ -251,7 +280,7 @@ Abdullah reviews the evaluation and refinement prompts; Mohamed reviews the prom
 
 **Checkpoint:** Model calls use the shared client, prompt outputs fit the graph, and configuration contains no real credentials.
 
-### Task 12: Add human-in-the-loop pause and resume
+### 🔴 Task 12: Add human-in-the-loop pause and resume
 
 **Lead: Mohamed**  
 **Collaborators: Ahmed, Seif, Abdullah**
@@ -268,7 +297,7 @@ Mohamed will integrate LangGraph checkpointing and interrupts for cases requirin
 
 **Checkpoint:** A reviewer can act on the paused graph and the graph resumes with the correct state.
 
-### Task 13: Build the interactive interface
+### 🔴 Task 13: Build the interactive interface
 
 **Lead: Ahmed**  
 **Collaborators: Mohamed, Seif, Abdullah**
@@ -293,7 +322,7 @@ Mohamed supplies the graph interface; Seif tests the integrated application; Abd
 
 **Checkpoint:** A user can see and complete each required workflow from the interface.
 
-### Task 14: Create the evaluation set and measure results
+### 🔴 Task 14: Create the evaluation set and measure results
 
 **Lead: Abdullah**  
 **Collaborators: Seif, Mohamed, Ahmed**
@@ -318,7 +347,7 @@ The report must state how metrics were calculated and note any manual judgments.
 
 **Checkpoint:** Results can be reproduced and no metric or result is invented.
 
-### Task 15: Integrate, test, and stabilize the complete system
+### 🔴 Task 15: Integrate, test, and stabilize the complete system
 
 **Coordinator: Seif (team leader)**
 **Collaborators: Abdullah, Mohamed, Ahmed**
@@ -341,7 +370,7 @@ Seif will coordinate an end-to-end integration pass. Every member will test the 
 
 **Checkpoint:** The integrated app starts cleanly and the required branches and failure paths have been tested.
 
-### Task 16: Complete the README, screenshots, and technical report
+### 🔴 Task 16: Complete the README, screenshots, and technical report
 
 **Lead: Ahmed**  
 **Collaborators: Seif, Abdullah, Mohamed**
@@ -365,7 +394,7 @@ The report must be a PDF (`DOCS/reports/final_report.pdf`) and must include the 
 
 **Checkpoint:** README is runnable as written and the report has all required sections and evidence.
 
-### Task 17: Final review and submission
+### 🔴 Task 17: Final review and submission
 
 **Coordinator: Seif (team leader)**
 **Collaborators: Abdullah, Mohamed, Ahmed**
