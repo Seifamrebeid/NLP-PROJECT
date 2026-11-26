@@ -18,8 +18,9 @@ Build an Agentic Retrieval-Augmented Generation (RAG) customer-support assistant
 ### Data Sources and Their Roles
 
 - **Primary retrieval knowledge base:** The team-authored fictional TechStore policies, FAQ, product catalog, and troubleshooting guide. These documents define the store's authoritative answers.
-- **Intent and evaluation dataset:** [Bitext Customer Support Dataset](https://huggingface.co/datasets/bitext/Bitext-customer-support-llm-chatbot-training-dataset), approximately 26,872 synthetic records across 27 intents and 10 categories. Use its `instruction`, `category`, `intent`, `response`, and `flags` fields for intent examples, routing tests, and evaluation cases.
+- **Intent and evaluation dataset:** [Bitext Customer Support Dataset](https://huggingface.co/datasets/bitext/Bitext-customer-support-llm-chatbot-training-dataset), 26,872 synthetic records across 27 intents and 11 categories (ACCOUNT, ORDER, REFUND, INVOICE, CONTACT, PAYMENT, FEEDBACK, DELIVERY, SHIPPING, SUBSCRIPTION, CANCEL). Use its `instruction`, `category`, `intent`, `response`, and `flags` fields for intent examples, routing tests, and evaluation cases.
 - **Important limitation:** Bitext is synthetic training data, not genuine TechStore customer history and not the authority for TechStore policies. If an example response conflicts with a fictional TechStore policy, follow the policy document.
+- **Known data issues (measured on the committed CSV):** about 13,000 responses and 6,700 instructions contain unfilled `{{placeholders}}` (for example `{{Order Number}}`); 2,237 instructions are duplicates; the `flags` field is made of undocumented letter codes; there are no product, warranty, or troubleshooting examples, so those routes need team-written test cases. Task 5 handles the first three and Task 8 the last.
 
 ## Ordered Tasks
 
@@ -32,7 +33,7 @@ Complete tasks in order because later tasks depend on the interfaces and outputs
 - [x] **Seif:** Create the shared GitHub repository, invite everyone, coordinate the domain decision, and open the first issues.
 - [ ] **Mohamed:** Review the project requirements and propose a practical RAG workflow and technical scope.
 - [ ] **Abdullah:** Review the Bitext dataset and propose example TechStore customer questions across its support categories.
-- [x] **Ahmed:** Create the initial folder structure and `.gitignore`,
+- [x] **Ahmed:** Create the initial folder structure and `.gitignore`.
 - [ ] **Everyone:** Agree that TechStore is the fictional online electronics store, its target users are customers seeking support, and its problem is finding accurate answers across policies and product information; create personal feature branches.
 
 **Checkpoint:** Repository, domain decision, and first issue assignments are ready before document collection begins.
@@ -47,7 +48,7 @@ Use the Bitext Customer Support Dataset for synthetic intent examples and evalua
 
 - [ ] **Seif:** Coordinate the TechStore policy scope, provide the shared writing template, and write the Escalation Policy covering complaints, exceptions, and unresolved cases.
 - [ ] **Mohamed:** Write the Return Policy, Refund Policy, and Warranty Policy, keeping their rules consistent and specific enough to retrieve.
-- [ ] **Abdullah:** Load and inspect the Bitext dataset, verify its fields and license/usage terms, and write the Shipping Policy, Order Management guide, and Customer FAQ.
+- [ ] **Abdullah:** Load and inspect the Bitext dataset, verify its fields and license/usage terms, and write the Shipping Policy, Order Management guide, and Customer FAQ. Record the exact license name, its conditions (for example attribution), and the known data issues in the README Data Sources section. Seif has confirmed that the license allows redistribution, so the committed CSV stays; add the required credit line.
 - [ ] **Ahmed:** Write the Payment Policy, Product Catalog, and Troubleshooting Guide, including realistic but clearly fictional products and specifications.
 - [ ] **Everyone:** Review the ten documents for contradictions, missing details, and clear human-escalation cases.
 
@@ -60,7 +61,7 @@ Use the Bitext Customer Support Dataset for synthetic intent examples and evalua
 
 Mohamed will draft the architecture and define the interfaces that the members will use together:
 
-- A graph state containing the original query, intent, route, retrieved documents, draft/final answer, evaluation result, retry count, and HITL status.
+- A graph state containing the original query, intent, query complexity, required data source, route, retrieved documents, draft/final answer, evaluation result, retry count, and HITL status.
 - A TechStore document representation that preserves text, title, policy section, document version, and source type; Bitext examples retain their instruction/category/intent/response/flags labels separately.
 - Consistent route and status names.
 - The graph inputs and outputs expected by the UI.
@@ -70,9 +71,9 @@ The team will review the design before implementation. Seif records the agreed c
 
 #### Small tasks and checkpoints
 
-- [ ] **Seif:** Lead the design discussion and record decisions the team approves.
-- [ ] **Mohamed:** Design the RAG state, retrieval-to-answer flow, graph routes, and retry cycle.
-- [ ] **Abdullah:** Define the Bitext example fields and TechStore policy metadata needed for intent testing, retrieval, and evaluation.
+- [ ] **Seif:** Lead the design discussion and record decisions the team approves in a decision log (`DOCS/architecture/DECISIONS.md`) that states each decision's tradeoffs.
+- [ ] **Mohamed:** Design the RAG state, retrieval-to-answer flow, graph routes, and retry cycle; draw the state-schema diagram; and document the graph input/output contract (API documentation).
+- [ ] **Abdullah:** Define the Bitext example fields and TechStore policy metadata needed for intent testing, retrieval, and evaluation, including an `audience` field (customer or internal) that access control can filter on.
 - [ ] **Ahmed:** Define the graph result fields and HITL statuses the interface needs to display.
 - [ ] **Everyone:** Review the shared names and approve the workflow diagram before implementation.
 
@@ -95,7 +96,7 @@ Seif reviews the repository setup; Abdullah checks data and vector-store setting
 
 #### Small tasks and checkpoints
 
-- [ ] **Seif:** Create task branches and review repository setup and secret-handling rules.
+- [ ] **Seif:** Create task branches and review repository setup and secret-handling rules. Write the security and privacy checklist from `PROJECT_INSTRUCTIONS.md` (input limits, prompt-injection rules, role-based access, log masking, synthetic-data-only rule) so later tasks can check against it.
 - [ ] **Mohamed:** List and verify the LangChain, LangGraph, embedding, and vector-store dependencies needed for the RAG workflow.
 - [ ] **Abdullah:** Specify data-file and dataset-path settings needed by ingestion and evaluation.
 - [ ] **Ahmed:** Add dependencies, `.env.example`, central configuration, and initial setup instructions.
@@ -115,7 +116,8 @@ Abdullah will implement loading for the Bitext dataset and the team's Markdown o
 - [ ] **Seif:** Confirm the fictional TechStore policies are in scope and record their version/date so the team can reproduce tests.
 - [ ] **Mohamed:** Define the text and metadata format the loader must pass into the RAG pipeline.
 - [ ] **Abdullah:** Load the Bitext dataset and TechStore policy files, preserving dataset fields and policy metadata.
-- [ ] **Ahmed:** Test the loaders with empty, malformed, and representative customer examples and policy documents.
+- [ ] **Abdullah:** Clean the Bitext data: handle the `{{placeholder}}` fields, remove duplicate instructions before any train/held-out split, and decode and document the `flags` codes. Document the accepted ingestion formats and metadata (ingestion documentation).
+- [ ] **Ahmed:** Test the loaders with empty, malformed, and representative customer examples and policy documents, including records that contain placeholders or duplicates.
 - [ ] **Everyone:** Review loaded examples and verify that dataset labels and policy source/version metadata remain attached.
 
 **Checkpoint:** Loaded documents contain usable text and traceable source metadata.
@@ -157,7 +159,7 @@ Abdullah will check returned documents against the sample questions; Mohamed wil
 #### Small tasks and checkpoints
 
 - [ ] **Seif:** Review the model and storage choices and confirm the team can run them with its available resources.
-- [ ] **Mohamed:** Lead embedding and vector-retrieval implementation; compare results for customer questions against the TechStore knowledge base.
+- [ ] **Mohamed:** Review the embedding and retriever interface for graph integration; compare results for customer questions against the TechStore knowledge base.
 - [ ] **Abdullah:** Prepare labeled Bitext examples and check that retrieved TechStore policies support the expected answer.
 - [ ] **Ahmed:** Configure embedding settings, persist the index, and handle empty-result responses.
 - [ ] **Everyone:** Test index creation and retrieval before connecting the full graph.
@@ -169,21 +171,20 @@ Abdullah will check returned documents against the sample questions; Mohamed wil
 **Coordinator: Seif**
 **Collaborators: Mohamed, Abdullah, Ahmed**
 
-Mohamed will implement the conditional graph logic, with Seif coordinating scope and review. Route requests through these paths:
+Mohamed will implement the conditional graph logic, with Seif coordinating scope and review. Route requests by intent, complexity (simple single-fact versus multi-part or multi-document), and required data source through these paths:
 
 - TechStore policy or product questions that need knowledge-base retrieval.
 - Customer-support intents such as order management, payments, delivery, refunds, and account management; use Bitext labels as training/testing examples, then retrieve the matching TechStore policy when an answer needs company information.
 - General conversational questions that do not need policy retrieval.
 - Out-of-scope requests, unresolved complaints, policy exceptions, or cases with insufficient evidence that should receive a safe response or human escalation.
 
-Mohamed reviews graph state and edges; Abdullah provides examples for the retrieval route; Ahmed checks the conversation and out-of-scope behavior. The route decision and route history must be available to the UI.
-Abdullah provides labeled Bitext cases and verifies expected intents; Ahmed verifies conversation, out-of-scope, and escalation status behavior. Seif coordinates review. The route decision and route history must be available to the UI.
+Mohamed reviews graph state and edges; Abdullah provides labeled Bitext cases and verifies expected intents; Ahmed verifies conversation, out-of-scope, and escalation status behavior. Seif coordinates review. The route decision, complexity, and route history must be available to the UI.
 
 #### Small tasks and checkpoints
 
-- [ ] **Seif:** Coordinate the routing requirements and confirm the three expected branches.
+- [ ] **Seif:** Write the routing rubric (intent, complexity, required data source) and confirm the three branches the course spec requires (retrieval, conversation, out-of-scope) plus the human-escalation path.
 - [ ] **Mohamed:** Implement and review the LangGraph state updates and conditional edges, prioritizing the retrieval path.
-- [ ] **Abdullah:** Use Bitext intent/category examples to create customer queries and verify that the expected TechStore intents route correctly.
+- [ ] **Abdullah:** Use Bitext intent/category examples to create customer queries and verify that the expected TechStore intents route correctly. Fill `data/sample_queries.json` with at least one sample query per branch (retrieval, conversation, out-of-scope, escalation) and per complexity level; write product, warranty, and troubleshooting queries by hand because Bitext has none.
 - [ ] **Ahmed:** Write general and out-of-scope examples and define the route/status values the UI will show.
 - [ ] **Everyone:** Review and test branch examples; Seif records the agreed acceptance results.
 
@@ -194,14 +195,14 @@ Abdullah provides labeled Bitext cases and verifies expected intents; Ahmed veri
 **Lead: Mohamed**  
 **Collaborators: Abdullah, Ahmed, Seif**
 
-Mohamed will connect the retrieval branch to the TechStore vector store and add the generation step that answers from retrieved policy or product context. The answer must not invent a company rule or treat a Bitext response as TechStore policy. Carry source documents through to the graph output. Abdullah checks policy grounding; Ahmed checks UI compatibility; Seif reviews the integrated workflow.
+Mohamed will connect the retrieval branch to the TechStore vector store and add the generation step that answers from retrieved policy or product context. The answer must not invent a company rule or treat a Bitext response as TechStore policy. Carry source documents through to the graph output. Abdullah checks policy grounding; Ahmed checks UI compatibility; Seif reviews the integrated workflow. Prerequisite: the core of Ahmed's shared LLM client from Task 11 (client plus environment configuration) must be merged before this task starts.
 
 #### Small tasks and checkpoints
 
-- [ ] **Seif:** Coordinate integration and check the end-to-end path on a sample TechStore customer question.
+- [ ] **Seif:** Coordinate integration and check the end-to-end path on a sample TechStore customer question. Verify that retrieval applies the `audience` filter so customers never receive internal-only documents, and that retrieved text is treated as data, not instructions.
 - [ ] **Mohamed:** Lead the core RAG implementation: retrieve relevant TechStore policies or product details, pass evidence to generation, and return source metadata.
 - [ ] **Abdullah:** Verify that generated order, delivery, refund, or warranty details match the fictional TechStore policies.
-- [ ] **Ahmed:** Connect the LLM call and make sure answers and citations fit the UI result format.
+- [ ] **Ahmed:** Connect the generation step to the shared LLM client and make sure answers and citations fit the UI result format.
 - [ ] **Everyone:** Test that the answer is grounded in retrieved TechStore documents and sources are visible.
 
 **Checkpoint:** A domain query produces an answer and the evidence used to generate it.
@@ -219,7 +220,7 @@ Abdullah will lead the quality loop:
 - Increment and preserve a retry counter.
 - Stop retrying when the configured maximum is reached and return a clear result or request human help.
 
-Mohamed reviews the graph cycle and stop condition; Ahmed tests the displayed retry details; Seif reviews failure behavior.
+Mohamed reviews the graph cycle and stop condition; Ahmed tests the displayed retry details; Seif reviews failure behavior. The refinement prompt uses the shared LLM client delivered early from Task 11.
 
 #### Small tasks and checkpoints
 
@@ -238,11 +239,11 @@ Mohamed reviews the graph cycle and stop condition; Ahmed tests the displayed re
 
 Ahmed will implement the shared model client and prompts for routing (if model-assisted), answer generation, evaluation, query refinement, conversation, and out-of-scope handling. API keys must load from environment variables, errors must be understandable, and prompts should require evidence-based answers for retrieved content.
 
-Abdullah reviews the evaluation and refinement prompts; Mohamed reviews the prompts' expected graph inputs and outputs; Seif reviews configuration and secret handling.
+Abdullah reviews the evaluation and refinement prompts; Mohamed reviews the prompts' expected graph inputs and outputs; Seif reviews configuration and secret handling. Scheduling: Ahmed delivers the client and environment configuration first, before Task 9 starts, and adds the remaining prompts as Tasks 9 and 10 need them.
 
 #### Small tasks and checkpoints
 
-- [ ] **Seif:** Review API-key handling and ensure no credentials are committed.
+- [ ] **Seif:** Review API-key handling and ensure no credentials are committed. Implement input validation (length and content limits on customer queries) and prompt-injection defenses for customer queries and retrieved documents; add log masking so secrets and personal data never reach logs or error reports.
 - [ ] **Mohamed:** Specify the graph inputs/outputs and refine the evidence-grounded RAG answer prompt.
 - [ ] **Abdullah:** Review evaluation and refinement prompts against Bitext intent examples and expected TechStore policy sources.
 - [ ] **Ahmed:** Implement the shared LLM client, environment configuration, and prompts for routing, generation, evaluation, refinement, and conversation.
@@ -259,9 +260,9 @@ Mohamed will integrate LangGraph checkpointing and interrupts for cases requirin
 
 #### Small tasks and checkpoints
 
-- [ ] **Seif:** Coordinate the review policy and lead the end-to-end pause/resume acceptance check.
+- [ ] **Seif:** Coordinate the review policy, define which reviewer roles may approve, reject, or edit (role-based access control), and lead the end-to-end pause/resume acceptance check.
 - [ ] **Mohamed:** Implement LangGraph checkpointing and interrupt/resume behavior in the workflow.
-- [ ] **Abdullah:** Provide an unresolved complaint, policy-exception, or low-evidence support example that should trigger human review.
+- [ ] **Abdullah:** Provide an unresolved complaint, policy-exception, or low-evidence support example that should trigger human review, and add it to `data/sample_queries.json` as the sample HITL-interrupt query.
 - [ ] **Ahmed:** Add the UI actions for approval, rejection, edits, or clarification and show pending status.
 - [ ] **Everyone:** Test approval and at least one change/rejection path, confirming state is preserved.
 
@@ -288,7 +289,6 @@ Mohamed supplies the graph interface; Seif tests the integrated application; Abd
 - [ ] **Mohamed:** Provide and integrate the graph invocation/result interface, including route history and resume state.
 - [ ] **Abdullah:** Check that product/order details, policy citations, and evaluation messages are understandable and accurate.
 - [ ] **Ahmed:** Build the query input, answer/source views, progress details, and HITL controls.
-- [ ] **Everyone:** Run domain, conversation, out-of-scope, retry, and HITL examples through the UI.
 - [ ] **Everyone:** Run product/policy, customer-support intent, general conversation, out-of-scope, retry, and human-escalation examples through the UI.
 
 **Checkpoint:** A user can see and complete each required workflow from the interface.
@@ -312,8 +312,8 @@ The report must state how metrics were calculated and note any manual judgments.
 
 - [ ] **Seif:** Review the evaluation plan and ensure report conclusions match the recorded measurements.
 - [ ] **Mohamed:** Run retrieval and graph-route tests and help diagnose low-quality results.
-- [ ] **Abdullah:** Lead the test set, expected evidence, metric definitions, and relevance/groundedness assessment.
-- [ ] **Ahmed:** Record results in a reproducible format and prepare tables or screenshots for the report.
+- [ ] **Abdullah:** Lead the test set, expected evidence, metric definitions, and relevance/groundedness assessment. Use only synthetic or anonymized cases; no real customer data.
+- [ ] **Ahmed:** Record results in a reproducible format, write the testing and evaluation documentation (methods and actual results), and prepare tables or screenshots for the report.
 - [ ] **Everyone:** Run assigned cases and report actual results, including failures and latency.
 
 **Checkpoint:** Results can be reproduced and no metric or result is invented.
@@ -333,7 +333,7 @@ Seif will coordinate an end-to-end integration pass. Every member will test the 
 
 #### Small tasks and checkpoints
 
-- [ ] **Seif:** Coordinate integration order, review completion, and merge approved pull requests.
+- [ ] **Seif:** Coordinate integration order, review completion, and merge approved pull requests. Run the security pass against the Task 4 checklist: prompt-injection attempts in queries and in a poisoned retrieved document, an attempt to retrieve an internal-only document, oversized or malformed input, and a check that logs and the repository contain no secrets or personal data.
 - [ ] **Mohamed:** Test and fix graph, retrieval, and retry integration issues.
 - [ ] **Abdullah:** Test ingestion, metadata, source accuracy, and evaluation behavior.
 - [ ] **Ahmed:** Test configuration, model errors, interface behavior, and HITL controls.
@@ -353,14 +353,14 @@ Ahmed will assemble the README and coordinate screenshots and report formatting.
 - **Mohamed:** LangGraph state, nodes, conditional edges, retry cycle, HITL checkpoint design, and technical challenges.
 - **Ahmed:** UI design and screenshots, setup instructions, README, report formatting, limitations, and future work (with team review).
 
-The report must include the title page, team contribution matrix, problem/domain motivation, system architecture and workflow diagram, technical challenges and solutions, quantitative and qualitative evaluation, screenshots of routing/refinement/HITL, limitations, and future work.
+The report must be a PDF (`DOCS/reports/final_report.pdf`) and must include the title page with each member's GitHub username, team contribution matrix, problem/domain motivation (target users, why single-pass RAG is inadequate, and how agentic orchestration solves it), system architecture and workflow diagram (including the state schema, nodes, conditional edges, loops, and HITL interrupt points, with the design rationale), technical challenges and solutions, quantitative and qualitative evaluation, screenshots of routing/refinement/HITL, limitations, and future work.
 
 #### Small tasks and checkpoints
 
-- [ ] **Seif:** Write the project motivation, coordinate the contribution matrix, and review final consistency.
-- [ ] **Mohamed:** Write the RAG architecture, LangGraph state/routes, retrieval/refinement loop, and workflow diagram explanation.
-- [ ] **Abdullah:** Write the TechStore knowledge-base and Bitext dataset sections, clearly explain that Bitext is synthetic and not the policy authority, and report evaluation methods and measured results.
-- [ ] **Ahmed:** Assemble the README, setup instructions, UI screenshots, HITL walkthrough, limitations, and future work.
+- [ ] **Seif:** Write the problem definition and project motivation (target users, why single-pass RAG is inadequate, how agentic orchestration helps), coordinate the contribution matrix, write the security and privacy section, and review final consistency.
+- [ ] **Mohamed:** Write the RAG architecture, LangGraph state/routes, retrieval/refinement loop, and workflow diagram explanation; include the state-schema diagram and the technical challenges and solutions for the graph and retrieval.
+- [ ] **Abdullah:** Write the TechStore knowledge-base and Bitext dataset sections, clearly explain that Bitext is synthetic and not the policy authority, document the data challenges (placeholders, duplicates, flags, license) and how they were handled, and report evaluation methods and measured results.
+- [ ] **Ahmed:** Assemble the README (including a sample-queries section with one query per conditional branch and the HITL interrupt, taken from `data/sample_queries.json`), setup instructions, title page with GitHub usernames, UI screenshots, HITL walkthrough, limitations, future work, and the PDF export of the report.
 - [ ] **Everyone:** Review the section describing their work and verify the report against the assignment requirements.
 
 **Checkpoint:** README is runnable as written and the report has all required sections and evidence.
@@ -382,7 +382,7 @@ Seif will lead a final checklist review with all members. Confirm that:
 
 #### Small tasks and checkpoints
 
-- [ ] **Seif:** Lead the final checklist, confirm the repository/report submission, and verify team contributions are represented fairly.
+- [ ] **Seif:** Lead the final checklist, confirm the repository/report submission, and verify team contributions are represented fairly. Compare each member's commits and PRs against the contribution matrix and rebalance any remaining work so contributions are roughly equal, as the course spec requires.
 - [ ] **Mohamed:** Demonstrate the complete RAG graph, including retrieval, refinement, retry limit, and source-grounded response.
 - [ ] **Abdullah:** Verify the data sources, sample cases, evaluation results, and report figures.
 - [ ] **Ahmed:** Verify setup instructions, `.env.example`, UI screenshots, and HITL pause/resume demonstration.
@@ -402,6 +402,8 @@ Agentic-RAG-System/
 │   ├── processed/
 │   └── sample_queries.json
 ├── DOCS/
+│   ├── architecture/
+│   │   └── DECISIONS.md
 │   ├── instructions/
 │   │   └── PROJECT_INSTRUCTIONS.md
 │   ├── planning/
@@ -423,6 +425,7 @@ Agentic-RAG-System/
 │   ├── edges/
 │   ├── llm/
 │   ├── prompts/
+│   ├── security/
 │   └── human_loop/
 ├── tests/
 ├── .env.example
@@ -464,13 +467,16 @@ docs(report): document architecture and results
 - [ ] The retry counter prevents an infinite loop.
 - [ ] LangGraph checkpointing and interrupts support human review and resume.
 - [ ] The UI displays route, sources, refinements, and HITL state.
+- [ ] Routing considers intent, complexity, and required data source.
+- [ ] Input validation, prompt-injection defenses, role-based access (`audience` filter and reviewer roles), and log masking are implemented and tested.
 - [ ] Tests cover the important branches and failure cases.
 
 ### Repository and Report
 
-- [ ] README contains architecture, setup, environment, and sample queries.
+- [ ] README contains architecture, setup, environment, and sample queries for each conditional branch and the HITL interrupt.
+- [ ] The Bitext license name, conditions, and credit line are recorded, and its known data issues are handled.
 - [ ] `.env.example` contains placeholders only; no secrets are committed.
 - [ ] Results include relevance, faithfulness, groundedness, and latency measures.
 - [ ] Screenshots show conditional routing, self-correction, and HITL.
-- [ ] The report contains the contribution matrix, challenges, results, limitations, and future work.
+- [ ] The report is a PDF and contains the title page with GitHub usernames, contribution matrix, problem definition, state-schema and workflow diagram, challenges, results, limitations, and future work.
 - [ ] All four members have verifiable personal commits, pull requests, and reviews.
