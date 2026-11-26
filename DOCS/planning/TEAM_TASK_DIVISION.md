@@ -329,7 +329,7 @@ Seif will coordinate an end-to-end integration pass. Every member will test the 
 - Check a clean setup using only the README and `.env.example`.
 - Test missing documents, empty retrieval, model/API errors, retry limit, and resume behavior.
 - Check that no secrets, private data, or unnecessary generated files were committed.
-- Review pull requests and merge approved work into `main`.
+- Review pull requests; Seif merges approved work into `main`.
 
 #### Small tasks and checkpoints
 
@@ -433,10 +433,12 @@ Agentic-RAG-System/
 
 ## GitHub Working Rules
 
+The full mandatory workflow is in [Mandatory GitHub Workflow](../instructions/PROJECT_INSTRUCTIONS.md#mandatory-github-workflow). Summary:
+
 - Do not commit directly to `main`; create a feature branch for each task.
-- The task lead opens a pull request and requests review from at least one teammate.
+- Push the branch and open a pull request; teammates review it. Seif merges only after approval.
 - Keep pull requests focused and include tests or clear manual verification steps.
-- Use each person's own GitHub account for commits and reviews.
+- Use each person's own GitHub account for commits and reviews. If Seif commits for a teammate, say so in the commit message and PR.
 - Use descriptive commit messages, for example:
 
 ```text

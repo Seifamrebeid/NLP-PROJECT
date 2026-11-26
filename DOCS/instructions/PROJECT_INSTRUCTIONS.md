@@ -106,7 +106,7 @@ Do not state that tests passed unless they were run. If a check could not be run
 - **Abdullah:** Contributes to dataset preparation, policy content, retrieval testing, and evaluation.
 - **Ahmed:** Contributes to model integration, product and payment content, HITL, interface, setup, and testing.
 
-All members should contribute code, review teammates' work, test across modules, and use personal GitHub accounts for commits and pull requests.
+All members should contribute code, review teammates' work, test across modules, and use personal GitHub accounts for commits and pull requests. See **Mandatory GitHub Workflow** below.
 
 ## Data Sources
 
@@ -157,11 +157,46 @@ Verify the dataset's license and usage conditions before redistributing it.
 - Show the source document and relevant section when possible.
 - Keep the difference between synthetic test data and authoritative fictional company policy clear.
 
-## GitHub and Collaboration
+## Mandatory GitHub Workflow
 
-- Work on feature branches; do not commit directly to `main`.
-- Open pull requests for changes and ask a teammate to review them.
-- Include tests or clear manual verification steps with each change.
+Source: Course Project Specification, Section 2 (personal GitHub accounts; grades based on commit history, pull requests, code reviews and verifiable contributions; single-uploader rule). The steps below are team policy built on it. They apply to EVERY task, including documentation changes.
+
+### Required steps
+
+1. Read all project instruction files before starting (`CLAUDE.md`, this file, `DOCS/planning/TEAM_TASK_DIVISION.md`, `README.md`).
+2. Create a separate feature branch for each task, from `main`. Never work directly on `main`.
+   Names: `feat/<member>-<topic>`, `docs/<member>-<topic>`, `test/<member>-<topic>`.
+3. With approval, pull the latest `main` locally, then create the branch from it.
+4. Implement the task and commit. Commits use the responsible member's personal GitHub account (see "Commits made on behalf of a teammate").
+5. Push the feature branch to the shared repository.
+6. Open a Pull Request for review.
+7. Teammates review the code and give feedback.
+8. Address review comments and obtain approval.
+9. Seif merges, only after approval. Never merge without the review process.
+
+### Approvals
+
+- Seif merges all PRs.
+- PRs by other members need Seif's approval before merging.
+- Seif's own PRs do not need another teammate's approval. They still follow the full branch, commit, push and PR flow, and teammates may review and comment. Seif addresses any feedback before merging.
+- Claude/AI assistants must ask for explicit approval before every state-changing action: file edits, commits, pull, push, PR creation and merge. Approval for one action does not carry over to the next. Read-only inspection needs no approval.
+
+### Commits made on behalf of a teammate
+
+Seif may commit work for another member. Both the commit message and the PR description must state this openly, for example:
+`feat(ui): add query input — Ahmed's Task 13, done by Seif`
+Never hide the real author or imply the teammate made the commit. Such work counts as Seif's contribution in GitHub history, and the contribution matrix must record it accurately.
+
+### Mandatory rules
+
+- Every member must have their own commits and verifiable contributions.
+- Maintain individual history through commits, PRs and code reviews.
+- Never use one account to upload everyone's work.
+- Never overwrite another member's changes.
+- Never skip the branch, commit, push or PR workflow.
+- If anything is unclear or conflicts with these instructions, stop and ask.
+- Include tests or clear manual verification steps in each PR.
 - Keep API keys and other secrets out of the repository. Use `.env.example` with placeholders.
+- Task checkbox updates (rule 12 above) also go through a branch and PR.
 - Keep the contribution matrix accurate to the work actually completed.
 

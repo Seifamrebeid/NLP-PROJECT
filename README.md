@@ -128,4 +128,4 @@ Document the evaluation method and actual measured results. Do not invent scores
 - **Abdullah:** Data preparation, policy content, retrieval testing, and evaluation.
 - **Ahmed:** Model integration, product and payment content, HITL, interface, setup, and testing.
 
-All members should contribute using their personal GitHub accounts, work through feature branches and pull requests, review teammates' work, and keep the contribution record accurate.
+All members should contribute using their personal GitHub accounts, work through feature branches and pull requests, review teammates' work, and keep the contribution record accurate. See the [Mandatory GitHub Workflow](DOCS/instructions/PROJECT_INSTRUCTIONS.md#mandatory-github-workflow).
