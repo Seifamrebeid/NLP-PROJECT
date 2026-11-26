@@ -42,7 +42,7 @@ These documents should be internally consistent and include useful source metada
 
 Source: [Bitext Customer Support Dataset on Hugging Face](https://huggingface.co/datasets/bitext/Bitext-customer-support-llm-chatbot-training-dataset)
 
-Downloaded CSV: `data/raw/Bitext_Sample_Customer_Support_Training_Dataset_27K_responses-v11.csv` (26,872 records; columns: `flags`, `instruction`, `category`, `intent`, `response`).
+Downloaded CSV: `data/raw/Bitext_Sample_Customer_Support_Training_Dataset_27K_responses-v11.csv` (26,872 records; 27 intents; 11 categories; columns: `flags`, `instruction`, `category`, `intent`, `response`). Known issues: unfilled `{{placeholders}}` in about half of the responses, 2,237 duplicate instructions, undocumented `flags` codes, and no product/warranty/troubleshooting examples. The license allows redistribution (confirmed by Seif); the exact license name and credit line will be added after Task 2. See the [project instructions](DOCS/instructions/PROJECT_INSTRUCTIONS.md#bitext-customer-support-dataset).
 
 The dataset contains synthetic customer-support examples. The project will use its instructions, categories, intents, responses, and flags for intent examples, routing tests, and evaluation cases.
 

@@ -137,6 +137,14 @@ Use the dataset's `instruction`, `category`, `intent`, `response`, and `flags` f
 
 Verify the dataset's license and usage conditions before redistributing it.
 
+Known data issues (measured on the committed CSV: 26,872 records, 27 intents, 11 categories):
+
+- About 13,000 responses and 6,700 instructions contain unfilled `{{placeholders}}` such as `{{Order Number}}`. Clean or mask them before use in prompts or evaluation; never present them as TechStore values.
+- 2,237 instructions are duplicates. Deduplicate before creating any train/held-out split so test cases do not leak.
+- The `flags` field uses undocumented letter codes; decode and document them before relying on them.
+- The dataset has no product, warranty, or troubleshooting examples. Write those routing and evaluation cases by hand.
+- Seif has confirmed the license allows redistribution, so the committed CSV stays. Abdullah records the exact license name, its conditions, and the required credit line in Task 2.
+
 ## Required System Behavior
 
 - Route TechStore product and policy questions to retrieval.
